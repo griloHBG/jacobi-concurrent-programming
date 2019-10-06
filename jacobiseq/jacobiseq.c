@@ -36,13 +36,22 @@ int main(int argc, char* argv[])
 
     int lin = 0, col = 0;
 
+    //seed(-5, 5);
+
     for(lin = 0; lin < N; lin++)
     {
         for(col = 0; col < N; col++)
         {
-            A[lin * N + col] = lin + col;
+            if(lin == col)
+            {
+                A[lin * N + col] = 80*((random() % 1000) / 1000.0);
+            }
+            else
+            {
+                A[lin * N + col] = 10*((random() % 1000) / 1000.0);
+            }
         }
-        B[lin] = lin;
+        B[lin] = 10 * ((random() % 1000) / 1000.0);
     }
 
     printf("\nA:\n");
@@ -51,7 +60,7 @@ int main(int argc, char* argv[])
     {
         for(col = 0; col < N; col++)
         {
-            printf("%5.2lf", A[lin * N + col]);
+            printf("%7.2lf", A[lin * N + col]);
         }
         printf("\n");
     }
@@ -60,7 +69,36 @@ int main(int argc, char* argv[])
 
     for(lin = 0; lin < N; lin++)
     {
-        printf("%5.2lf", B[lin]);
+        printf("%7.2lf", B[lin]);
+        printf("\n");
+    }
+
+    printf("Converges? Lets see...\n");
+
+    double* A_fake = (double*) calloc(N * N, sizeof(double));
+
+    for(lin = 0; lin < N; lin++)
+    {
+        for(col = 0; col < N; col++)
+        {
+            A_fake[lin * N + col] = A[lin * N + col] / A[lin * (N + 1)];
+        }
+        A_fake[lin * (N + 1)] = 0;
+    }
+
+    double line_sum;
+
+    for(lin = 0; lin < N; lin++)
+    {
+        line_sum = 0;
+        for(col = 0; col < N; col++)
+        {
+            printf("%7.2lf", A_fake[lin * N + col]);
+            line_sum += A_fake[lin * N + col];
+        }
+
+        printf("\t\tline sum: %7.2lf", line_sum);
+
         printf("\n");
     }
 

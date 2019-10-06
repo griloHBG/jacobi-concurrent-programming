@@ -12,4 +12,4 @@ IF(USE_OpenMP)
     ENDIF()
 ENDIF()
 
-add_executable(jacobipar jacobipar.c)
+add_executable(jacobipar jacobipar.c random_par.c)
