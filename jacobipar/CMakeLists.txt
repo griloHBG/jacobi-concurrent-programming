@@ -1,7 +1,4 @@
-
-
-
-
+cmake_minimum_required(VERSION 3.15)
 project(jacobipar C)
 
 set(CMAKE_C_STANDARD 99)
@@ -15,4 +12,4 @@ IF(USE_OpenMP)
     ENDIF()
 ENDIF()
 
-add_executable(jacobipar jacobipar/jacobipar.c)
+add_executable(jacobipar jacobipar.c)
