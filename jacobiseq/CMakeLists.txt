@@ -12,4 +12,6 @@ IF(USE_OpenMP)
     ENDIF()
 ENDIF()
 
+#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-stack-protector")
+
 add_executable(jacobiseq jacobiseq.c)
