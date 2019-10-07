@@ -13,5 +13,7 @@ IF(USE_OpenMP)
 ENDIF()
 
 #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-stack-protector")
+#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-stack-protector")
 
 add_executable(jacobiseq jacobiseq.c random_par.c)
+target_link_libraries(jacobiseq m)
