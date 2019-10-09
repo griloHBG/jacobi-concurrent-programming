@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 
         for(col = 0; col < N; col++)
         {
-            A[lin * N + col] = floor(10*((random() % 1000) / 1000.0));
+            A[lin * N + col] = floor(10*((rand() % 1000) / 1000.0));
 
             line_sum[lin] += ((lin == col) ? 0 : A[lin * N + col]);
         }
@@ -66,9 +66,9 @@ int main(int argc, char* argv[])
         //So, to assure convergence, a random number is sumed to the diagonal element until it is greater than the line non-diagonal elements sum
         while(A[lin * N + lin] < line_sum[lin])
         {
-            A[lin * N + lin] += floor(10*((random() % 1000) / 1000.0));
+            A[lin * N + lin] += floor(10*((rand() % 1000) / 1000.0));
         }
-        B[lin] = 10 * ((random() % 1000) / 1000.0);
+        B[lin] = 10 * ((rand() % 1000) / 1000.0);
     }
 
     //printing A

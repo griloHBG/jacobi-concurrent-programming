@@ -1,0 +1,41 @@
+@startuml
+scale 600 width
+
+'example for a matrix A 3 x 3 and B 3 x 1
+
+start
+partition "variables allocation" {
+    :Allocate for A, A*, B, B*, x, mr, Diff;
+}
+partition "generating A and B matrices" {
+    fork
+        ->line A[0];
+        :radomize for A[0];
+        :radomize for B[0];
+        :calculate A*[0];
+        :calculate B*[0];
+    fork again
+        ->line A[1];
+        :radomize for A[1];
+        :radomize for B[1];
+        :calculate A*[1];
+        :calculate B*[1];
+    fork again
+        ->line A[2];
+        :radomize for A[2];
+        :radomize for B[2];
+        :calculate A*[2];
+        :calculate B*[2];
+    end fork
+}
+:Convergence Test on A* matrix\n[reads A*];
+:first guess for x is equal to B*\n[reads B*]\n[writes x[k]];
+repeat
+    :calculate next x\n[reads A*, B*, x[k]]\n[writes x[k+1]];
+    :evaluate diff[k+1]\n[reads x[k], x[k+1]*];
+    :evaluate mr[k+1]\n[reads diff, x[k+1]];
+    :k++;
+repeat while (mr[k] >= 0.001\n[reads mr[k]]) is (**no** convergence yet...)
+->convergence!;
+stop
+@enduml

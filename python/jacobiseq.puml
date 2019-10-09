@@ -1,0 +1,16 @@
+@startuml
+
+start
+:generate A and B matrices;
+:Create A* and B* matrices\n[reads A, B]\n[writes A*, B*]";
+:Convergence Test on A* matrix\n[reads A*];
+:first guess for x is equal to B*\n[reads B*]\n[writes x[k]];
+repeat
+    :calculate next x\n[reads A*, B*, x[k]]\n[writes x[k+1]];
+    :evaluate diff[k+1]\n[reads x[k], x[k+1]*];
+    :evaluate mr[k+1]\n[reads diff, x[k+1]];
+    :k++;
+repeat while (mr[k] >= 0.001\n[reads mr[k]]) is (**no** convergence yet...)
+->convergence!;
+stop
+@enduml
