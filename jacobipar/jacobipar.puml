@@ -1,12 +1,13 @@
 @startuml
 scale 600 width
 
-'example for a matrix A 3 x 3 and B 3 x 1
-
 start
-partition "variables allocation" {
+
+:example for a matrix A 3 x 3 and B 3 x 1000;
+
+
     :Allocate for A, A*, B, B*, x, mr, Diff;
-}
+
 partition "generating A and B matrices" {
     fork
         ->line A[0];
@@ -17,12 +18,18 @@ partition "generating A and B matrices" {
     fork again
         ->line A[1];
         :radomize for A[1];
+        while (sum(off diag A[1]) > diag A[1])
+            :sum random number to diagonal element on A[1];
+        end while
         :radomize for B[1];
         :calculate A*[1];
         :calculate B*[1];
     fork again
         ->line A[2];
         :radomize for A[2];
+        while (sum(off diag A[2]) > diag A[2])
+            :sum random number to diagonal element on A[2];
+        end while
         :radomize for B[2];
         :calculate A*[2];
         :calculate B*[2];
@@ -38,4 +45,19 @@ repeat
 repeat while (mr[k] >= 0.001\n[reads mr[k]]) is (**no** convergence yet...)
 ->convergence!;
 stop
+@enduml
+
+
+@startuml
+salt
+{
+  Just plain text
+  [This is my button]
+  ()  Unchecked radio
+  (X) Checked radio
+  []  Unchecked box
+  [X] Checked box
+  "Enter text here   "
+  ^This is a droplist^
+}
 @enduml
