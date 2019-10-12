@@ -1,0 +1,73 @@
+@startuml
+hide circles
+hide methods
+hide fields
+
+package A <<Rectangle>>{
+    class A_0
+    class A_1
+    class A_2
+}
+note top of A : Matrix A
+note bottom of A_0: "Line 0 of Matrix A"
+
+package B <<Rectangle>>{
+    class B_0
+    class B_1
+    class B_2
+}
+note top of B: Column Vector B
+note bottom of B_0: "Element 0 of vector B"
+
+package A_star <<Rectangle>>{
+    A_0 <-- A_star_0
+    A_1 <-- A_star_1
+    A_2 <-- A_star_2
+}
+package B_star <<Rectangle>>{
+    B_0 <-- B_star_0
+    B_1 <-- B_star_1
+    B_2 <-- B_star_2
+}
+
+A <-- A_star
+B <-- B_star
+
+package xk <<Rectangle>>
+{
+    A_star_0 <-- xk_0
+    B_star_0 <-- xk_0
+    A_star_1 <-- xk_1
+    B_star_1 <-- xk_1
+    A_star_2 <-- xk_2
+    B_star_2 <-- xk_2
+}
+package xk1 <<Rectangle>>
+{
+    A_star_0 <-- xk1_0
+    B_star_0 <-- xk1_0
+    xk_0     <---- xk1_0
+
+    A_star_1 <-- xk1_1
+    B_star_1 <-- xk1_1
+    xk_1     <---- xk1_1
+
+    A_star_2 <-- xk1_2
+    B_star_2 <-- xk1_2
+    xk_2     <-- xk1_2
+}
+
+package Dif <<Rectangle>>
+{
+    xk_0  <-- Dif_0
+    xk_1  <-- Dif_1
+    xk_2  <-- Dif_2
+    xk1_0 <--- Dif_0
+    xk1_1 <--- Dif_1
+    xk1_2 <--- Dif_2
+}
+
+Dif_0 <-- Mr
+Dif_1 <-- Mr
+Dif_2 <-- Mr
+@enduml

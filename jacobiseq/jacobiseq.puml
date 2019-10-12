@@ -1,16 +1,83 @@
 @startuml
-
+'skinparam activityFontSize 18
+'skinparam activityDiamondFontSize 18
+'skinparam activityArrowFontSize 18
+'skinparam defaultFontSize 18
+'skinparam noteFontSize 18
 start
-:generate A and B matrices;
-:Create A* and B* matrices\n[reads A, B]\n[writes A*, B*]";
-:Convergence Test on A* matrix\n[reads A*];
-:first guess for x is equal to B*\n[reads B*]\n[writes x[k]];
-repeat
-    :calculate next x\n[reads A*, B*, x[k]]\n[writes x[k+1]];
-    :evaluate diff[k+1]\n[reads x[k], x[k+1]*];
-    :evaluate mr[k+1]\n[reads diff, x[k+1]];
-    :k++;
-repeat while (mr[k] >= 0.001\n[reads mr[k]]) is (**no** convergence yet...)
-->convergence!;
+:Declare and allocate
+matrices **[NxN]** A and A*
+column vectors **[Nx1]** B, B*, x, x_new, Dif
+scalar **[1x1]** mr;
+while (lin < N)
+    :Randomize line of A;
+    while (sum(A[lin] off diagonal) > A[lin] on diagonal) is (true)
+        floating note right
+            if sum(A[lin] off diagonal) > (A[lin] on diagonal),
+            then convergence is not assured
+        endnote
+        :sum random number to A diagonal
+        element of "non-converging" line;
+    endwhile (false)
+    :Randomize line of B;
+    :lin++;
+endwhile
+-> true;
+partition "Calculate A*, B* and first x guess" {
+    :lin = xablau;
+    while (lin < N) is (true)
+        :col = 0;
+        while (col < N) is (true)
+            if (lin == col) then (true)
+                :A*[lin][lin] = 0;
+                note left
+                    for diagonal
+                    elements
+                endnote
+            else (false)
+                :A*[lin][col] = A[lin][col] / A[lin][lin];
+                note right
+                    for non-diagonal
+                    elements
+                endnote
+            endif
+            :col++;
+        endwhile (false)
+        :B*[lin] = B[lin] / A[lin][lin];
+        :x[lin] = B*[lin];
+        note :first guess for x is equal to B*
+        :lin++;
+    endwhile (false)
+}
+:max_Dif to store the larger element on Dif;
+:max_x_new to store the larger **absolute** element on x_new;
+partition "Core algorithm"{
+    repeat
+        :max_Dif = lowest possible **negative** value;
+        :max_x_new = lowest possible **negative** value;
+        :lin = 0;
+        while (lin < N) is (true)
+            :col = 0;
+            partition "x_new calculation" {
+            :x_new[lin] = B*[lin];
+            while (col < N) is (true)
+                :x_new[lin] = x_new[lin] - A*[lin][col] * x[col];
+                :col++;
+            endwhile (false)
+            }
+            :Dif[lin] = abs(x_new[lin] - x[lin]);
+            :max_Dif = max(max_Dif, Dif[lin]);
+            :max_x_new = max(max_x_new, x_new[lin]);
+            :lin++;
+        end while (false)
+        :mr[lin] = max_Dif / max_x_new;
+        :lin = 0;
+        while (lin < N) is (true)
+            :x[lin] = x_new[lin];
+            :lin++;
+        endwhile (false)
+    repeat while (mr[k] >= 0.001) is (**false** convergence yet...)
+    ->convergence!;
+}
 stop
 @enduml

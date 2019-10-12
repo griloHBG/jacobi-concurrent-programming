@@ -1,45 +1,68 @@
 @startuml
-scale 600 width
+scale 1200 width
 
 start
 
 :example for a matrix A 3 x 3 and B 3 x 1000;
 
-
-    :Allocate for A, A*, B, B*, x, mr, Diff;
+:Allocate for A, A*, B, B*, x, mr, Diff;
 
 partition "generating A and B matrices" {
     fork
         ->line A[0];
         :radomize for A[0];
-        :radomize for B[0];
+        while (sum(off diag A[0]) > diag A[0]) is (true)
+            :sum random number to diagonal element on A[0];
+        end while
+        ->false;
+        :radomize for B[0] is;
         :calculate A*[0];
         :calculate B*[0];
     fork again
         ->line A[1];
         :radomize for A[1];
-        while (sum(off diag A[1]) > diag A[1])
+        while (sum(off diag A[1]) > diag A[1]) is (true)
             :sum random number to diagonal element on A[1];
         end while
+        note left
+            assuring convergence
+        end note
+        ->false;
         :radomize for B[1];
         :calculate A*[1];
         :calculate B*[1];
     fork again
         ->line A[2];
         :radomize for A[2];
-        while (sum(off diag A[2]) > diag A[2])
+        while (sum(off diag A[2]) > diag A[2]) is (true)
             :sum random number to diagonal element on A[2];
         end while
+        ->false;
         :radomize for B[2];
         :calculate A*[2];
         :calculate B*[2];
     end fork
 }
-:Convergence Test on A* matrix\n[reads A*];
-:first guess for x is equal to B*\n[reads B*]\n[writes x[k]];
+fork
+    :x(k)[0] = B*[0];
+fork again
+    :x(k)[1] = B*[1];
+fork again
+    :x(k)[2] = B*[2];
+end fork
+':Convergence Test on A* matrix\n[reads A*];
+
 repeat
-    :calculate next x\n[reads A*, B*, x[k]]\n[writes x[k+1]];
-    :evaluate diff[k+1]\n[reads x[k], x[k+1]*];
+    fork
+        :x(k+1)[0] = B*[0] - A*[0][1] * x(k)[1] - A*[0][2] * x(k)[2];
+        :diff[k+1] = Abs(x(k+1)[0] - x(k)[0]);
+    fork again
+        :x(k+1)[0] = B*[1] - A*[0][0] * x(k)[0] - A*[0][2] * x(k)[2];
+        :diff[k+1] = Abs(x(k+1)[0] - x(k)[0]);
+    fork again
+        :x(k+1)[0] = B*[2] - A*[0][0] * x(k)[0] - A*[0][1] * x(k)[1];
+        :diff[k+1] = Abs(x(k+1)[0] - x(k)[0]);
+    end fork
     :evaluate mr[k+1]\n[reads diff, x[k+1]];
     :k++;
 repeat while (mr[k] >= 0.001\n[reads mr[k]]) is (**no** convergence yet...)
@@ -60,4 +83,14 @@ salt
   "Enter text here   "
   ^This is a droplist^
 }
+@enduml
+
+@startuml
+:<math>int_0^1f(x)dx</math>;
+:<math>x^2+y_1+z_12^34</math>;
+note right
+Try also
+<math>d/dxf(x)=lim_(h->0)(f(x+h)-f(x))/h</math>
+<latex>P(y|\mathbf{x}) \mbox{ or } f(\mathbf{x})+\epsilon</latex>
+end note
 @enduml
