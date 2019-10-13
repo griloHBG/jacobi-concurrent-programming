@@ -17,11 +17,11 @@ O problema resume-se em:
 |B         |Não    |N     |1      |vetor coluna independente            |
 |B*        |Não    |N     |1      |vetor coluna B alterado              |
 |x         |Não    |N     |1      |vetor solução atual                  |
-|x~new~    |Não    |N     |1      |vetor solução novo                   |
+|x<sub>new</sub>    |Não    |N     |1      |vetor solução novo                   |
 |Dif       |Não    |N     |1      |diferença entre soluções consecutivas|
 |Mr        |Sim    |-     |-      |erro                                 |
-|max~x_new~|Sim    |-     |-      |max elemento absoluto de x~new~      |
-|max~Dif~  |Sim    |-     |-      |max elemento de Dif                  |
+|max<sub>x_new</sub>|Sim    |-     |-      |max elemento absoluto de x<sub>new</sub>      |
+|max<sub>Dif</sub>  |Sim    |-     |-      |max elemento de Dif                  |
 
 Precedência de variáveis:
 
@@ -51,9 +51,9 @@ Para o cálculo de **A\***, será utilizada uma tarefa para cada elemento de **A
 
 **N** tarefas (**bloco 4**) serão utilizadas para definir o valor inicial de **x**: uma tarefa para cada elemento de **x**. O valor inicial para **x** será uma cópia de **B\***.
 
-Cálculo de cada novo valor de **x~new~** será realizado pelo **bloco 5** de tarefas em que **N\*N** tarefas (**bloco 5**) realizarão a multiplicação de cada uma das linhas de **A\*** pelos elementos de **x**. Então **N** tarefas (**bloco 6**) realizarão a subtração de cada elemento de **B** com a soma das multiplicações das respectivas linhas e, após isso, calcularão, cada uma, um elemento de **Dif**, que é dado pelo valor absoluto da subtração entre **x~new~** e **x**. Aproveitando que cada uma das **N** tarefas terão um valor para **x~new~** e para **Dif**, a variável **max~x_new~** armazenará o maior valor absoluto dentre os elementos de **x~new~** e a variável **max~Dif~** armazenará o maior valor dentre os elementos de **Dif**.
+Cálculo de cada novo valor de **x<sub>new</sub>** será realizado pelo **bloco 5** de tarefas em que **N\*N** tarefas (**bloco 5**) realizarão a multiplicação de cada uma das linhas de **A\*** pelos elementos de **x**. Então **N** tarefas (**bloco 6**) realizarão a subtração de cada elemento de **B** com a soma das multiplicações das respectivas linhas e, após isso, calcularão, cada uma, um elemento de **Dif**, que é dado pelo valor absoluto da subtração entre **x<sub>new</sub>** e **x**. Aproveitando que cada uma das **N** tarefas terão um valor para **x<sub>new</sub>** e para **Dif**, a variável **max<sub>x_new</sub>** armazenará o maior valor absoluto dentre os elementos de **x<sub>new</sub>** e a variável **max<sub>Dif</sub>** armazenará o maior valor dentre os elementos de **Dif**.
 
-De posse de **max~Dif~** e **max~x_new~**, uma única tarefa (**bloco 7**) realizará a divisão entre aquele e este para obter **mr**. Se **mr** for menor que 0.001, então houve convergência. Caso contrário, o algoritmo voltará a executar as tarefas do **bloco 5** em diante.
+De posse de **max<sub>Dif</sub>** e **max<sub>x_new</sub>**, uma única tarefa (**bloco 7**) realizará a divisão entre aquele e este para obter **mr**. Se **mr** for menor que 0.001, então houve convergência. Caso contrário, o algoritmo voltará a executar as tarefas do **bloco 5** em diante.
 
 
 
