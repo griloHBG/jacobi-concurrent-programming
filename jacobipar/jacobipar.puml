@@ -13,7 +13,7 @@ partition "generating A and B matrices" {
         :radomize for A[0];
         while (sum(off diag A[0]) > diag A[0]) is (true)
             :sum random number to diagonal element on A[0];
-        end while
+        end while (false)
         ->false;
         :radomize for B[0] is;
         :calculate A*[0];
@@ -23,7 +23,7 @@ partition "generating A and B matrices" {
         :radomize for A[1];
         while (sum(off diag A[1]) > diag A[1]) is (true)
             :sum random number to diagonal element on A[1];
-        end while
+        end while (false)
         note left
             assuring convergence
         end note
@@ -36,7 +36,7 @@ partition "generating A and B matrices" {
         :radomize for A[2];
         while (sum(off diag A[2]) > diag A[2]) is (true)
             :sum random number to diagonal element on A[2];
-        end while
+        end while (false)
         ->false;
         :radomize for B[2];
         :calculate A*[2];
@@ -63,10 +63,10 @@ repeat
         :x(k+1)[0] = B*[2] - A*[0][0] * x(k)[0] - A*[0][1] * x(k)[1];
         :diff[k+1] = Abs(x(k+1)[0] - x(k)[0]);
     end fork
-    :evaluate mr[k+1]\n[reads diff, x[k+1]];
+    :mr = max(diff) / max(x(k+1));
     :k++;
-repeat while (mr[k] >= 0.001\n[reads mr[k]]) is (**no** convergence yet...)
-->convergence!;
+repeat while (mr[k] >= 0.001) is (true (**no** convergence yet...))
+->false;
 stop
 @enduml
 

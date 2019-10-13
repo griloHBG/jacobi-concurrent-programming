@@ -1,0 +1,153 @@
+@startuml
+!define LIGHTBLUE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+hide circles
+hide methods
+
+title **Particionamento**
+
+class início
+{
+    Lê N
+    --
+    **1** tarefa
+}
+
+class "bloco 1"
+{
+    cria A
+    cria B
+    --
+    L
+    --
+    **N*(N+1)** tarefas
+}
+class "bloco 2"
+{
+    altera A
+    --
+    **N** tarefas
+}
+class "bloco 3"
+{
+    cria A*
+    cria B*
+    --
+    **N*(N+1)** tarefas
+}
+class "bloco 4"
+{
+    cria x
+    --
+    **N** tarefas
+}
+class "bloco 5"
+{
+    calcula A * x
+    --
+    **N*N** tarefas
+}
+class "bloco 6"
+{
+    calcula x_new
+    cria Dif
+    cria max_x_new
+    cria max_Dif
+    --
+    **N** tarefas
+}
+
+class "bloco 7"
+{
+    cria mr
+    --
+    **1** tarefa
+}
+
+@enduml
+
+@startuml
+!define LIGHTBLUE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+hide circles
+hide methods
+
+title **Comunicação**
+
+class início
+{
+    Lê N
+    --
+    **1** tarefa
+}
+
+class "bloco 1"
+{
+    cria A
+    cria B
+    --
+    L
+    --
+    **N*(N+1)** tarefas
+}
+class "bloco 2"
+{
+    altera A
+    --
+    **N** tarefas
+}
+class "bloco 3"
+{
+    cria A*
+    cria B*
+    --
+    **N*(N+1)** tarefas
+}
+class "bloco 4"
+{
+    cria x
+    --
+    **N** tarefas
+}
+class "bloco 5"
+{
+    calcula A * x
+    --
+    **N*N** tarefas
+}
+class "bloco 6"
+{
+    calcula x_new
+    cria Dif
+    cria max_x_new
+    cria max_Dif
+    --
+    **N** tarefas
+}
+
+class "bloco 7"
+{
+    cria mr
+    --
+    **1** tarefa
+}
+
+início --> "bloco 1"    : N
+início --> "bloco 2"    : N
+início --> "bloco 3"    : N
+início --> "bloco 4"    : N
+início --> "bloco 5"    : N
+início --> "bloco 6"    : N
+"bloco 1" --> "bloco 2" : A
+"bloco 2" --> "bloco 3" : A (converge)
+"bloco 1" --> "bloco 3" : B
+"bloco 3" --> "bloco 4" : B*
+"bloco 3" --> "bloco 5" : A*, B*
+"bloco 4" --> "bloco 5" : x
+"bloco 3" --> "bloco 6" : B*
+"bloco 4" --> "bloco 6" : x
+"bloco 5" --> "bloco 6" : A*x
+"bloco 6" --> "bloco 4" : x_new
+"bloco 6" --> "bloco 7" : max_Dif, max_x_new
+
+@enduml
