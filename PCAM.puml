@@ -16,38 +16,47 @@ class início
 class "bloco 1"
 {
     cria A
-    cria B
     --
-    L
-    --
-    **N*(N+1)** tarefas
+    **N*N** tarefas
 }
+
 class "bloco 2"
 {
-    altera A
+    cria B
     --
     **N** tarefas
 }
 class "bloco 3"
 {
-    cria A*
-    cria B*
-    --
-    **N*(N+1)** tarefas
-}
-class "bloco 4"
-{
-    cria x
+    altera A
     --
     **N** tarefas
 }
-class "bloco 5"
+class "bloco 4"
 {
-    calcula A * x
+    cria A*
     --
     **N*N** tarefas
 }
+class "bloco 5"
+{
+    cria B*
+    --
+    **N** tarefas
+}
 class "bloco 6"
+{
+    cria x (inicial)
+    --
+    **N** tarefas
+}
+class "bloco 7"
+{
+    calcula A* * x
+    --
+    **N*N** tarefas
+}
+class "bloco 8"
 {
     calcula x_new
     cria Dif
@@ -57,7 +66,7 @@ class "bloco 6"
     **N** tarefas
 }
 
-class "bloco 7"
+class "bloco 9"
 {
     cria mr
     --
@@ -84,38 +93,47 @@ class início
 class "bloco 1"
 {
     cria A
-    cria B
     --
-    L
-    --
-    **N*(N+1)** tarefas
+    **N*N** tarefas
 }
+
 class "bloco 2"
 {
-    altera A
+    cria B
     --
     **N** tarefas
 }
 class "bloco 3"
 {
-    cria A*
-    cria B*
-    --
-    **N*(N+1)** tarefas
-}
-class "bloco 4"
-{
-    cria x
+    altera A
     --
     **N** tarefas
 }
-class "bloco 5"
+class "bloco 4"
 {
-    calcula A * x
+    cria A*
     --
     **N*N** tarefas
 }
+class "bloco 5"
+{
+    cria B*
+    --
+    **N** tarefas
+}
 class "bloco 6"
+{
+    cria x (inicial)
+    --
+    **N** tarefas
+}
+class "bloco 7"
+{
+    calcula A* * x
+    --
+    **N*N** tarefas
+}
+class "bloco 8"
 {
     calcula x_new
     cria Dif
@@ -125,29 +143,42 @@ class "bloco 6"
     **N** tarefas
 }
 
-class "bloco 7"
+class "bloco 9"
 {
     cria mr
     --
     **1** tarefa
 }
 
-início --> "bloco 1"    : N
-início --> "bloco 2"    : N
-início --> "bloco 3"    : N
-início --> "bloco 4"    : N
-início --> "bloco 5"    : N
-início --> "bloco 6"    : N
-"bloco 1" --> "bloco 2" : A
-"bloco 2" --> "bloco 3" : A (converge)
-"bloco 1" --> "bloco 3" : B
-"bloco 3" --> "bloco 4" : B*
-"bloco 3" --> "bloco 5" : A*, B*
-"bloco 4" --> "bloco 5" : x
-"bloco 3" --> "bloco 6" : B*
-"bloco 4" --> "bloco 6" : x
-"bloco 5" --> "bloco 6" : A*x
-"bloco 6" --> "bloco 4" : x_new
-"bloco 6" --> "bloco 7" : max_Dif, max_x_new
+início    --> "bloco 1"    : N
+início    --> "bloco 2"    : N
+início    --> "bloco 3"    : N
+início    --> "bloco 4"    : N
+início    --> "bloco 5"    : N
+início    --> "bloco 6"    : N
+início    --> "bloco 7"    : N
+início    --> "bloco 8"    : N
+
+"bloco 1" --> "bloco 3" : A
+
+"bloco 2" --> "bloco 5" : B
+
+"bloco 3" --> "bloco 4" : A
+"bloco 3" --> "bloco 5" : A
+
+"bloco 4" --> "bloco 7" : A*
+
+"bloco 5" --> "bloco 6" : B*
+"bloco 5" --> "bloco 8" : B*
+
+"bloco 6" --> "bloco 7" : x
+"bloco 6" --> "bloco 8" : x
+
+"bloco 7" --> "bloco 8" : A* * x
+
+"bloco 8" --> "bloco 7" : x_new
+"bloco 8" --> "bloco 9" : max_Dif, max_x_new
+
+"bloco 9" ----> "bloco 7" : continua?
 
 @enduml

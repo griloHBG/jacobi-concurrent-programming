@@ -33,32 +33,101 @@ Serão utilizadas, no máximo, **T** threads.
 
 #### Particionamento
 
-*DISCLAIMER: o termo bloco foi utilizado para facilitar a referência aos conjuntos que apareceram juntos durante a fase de particionamento. **não necessariamente reflete a fase de aglomeração*** 
+*DISCLAIMER: o termo bloco foi utilizado para facilitar a referência aos conjuntos que apareceram juntos durante a fase de particionamento. **não necessariamente reflete o resultado da fase de aglomeração*** 
 
-![](.README_images/particionamento.png)
+![](.README_images/partitioning.png)
 
 O particionamento será realizado tanto por funcão quanto por dados.
 
 Uma tarefa no início receberá/lerá o valor de **N**.
 
-É necessário gerar **A** e **B**. Cada elemento de **A** e de **B** será gerado por uma tarefa distinta (ou seja, **N\*(N+1)** tarefas). Estas tarefas receberão o nome de **bloco 1**.
+É necessário gerar **A** e **B**. Cada elemento de **A** e de **B** será gerado por uma tarefa distinta, ou seja, **N\*N** tarefas para **A** (**bloco 1**) e **N** tarefas para **B** (**bloco 2**)
 
-Após gerados todos os elementos, será realizada a análise de convergência a fim de saber se o método convergirá com a matriz **A** gerada. Para realizar o teste, será feita uma tarefa por linha **A**(ou seja, **N** tarefas). Este conjunto de tarefas será denominado **bloco 2**.
+Após gerados todos os elementos, será realizada a análise de convergência a fim de saber se o método convergirá com a matriz **A** gerada. Para realizar o teste, será feita uma tarefa por linha **A**(ou seja, **N** tarefas). Este conjunto de tarefas será denominado **bloco 3**.
 Para cada tarefa, enquanto o teste de convergência falhar, a respectiva tarefa incrementará um número aleatório em seu respectivo elemento da diagonal.
 
 Após ter convergência assegurada, serão calculadas as matrizes **A\*** e **B\***.
-Para o cálculo de **A\***, será utilizada uma tarefa para cada elemento de **A\*** (**N\*N** tarefas) e uma tarefa para cada elemento de **B\*** (**N** tarefas), sendo que este bloco de tarefas é denominado **bloco 3** (total de **N\*(N+1)** tarefas).
+Para o cálculo de **A\***, será utilizada uma tarefa para cada elemento de **A\*** (**N\*N** tarefas, **bloco 4**) e uma tarefa para cada elemento de **B\*** (**N** tarefas, **bloco 5**)
 
-**N** tarefas (**bloco 4**) serão utilizadas para definir o valor inicial de **x**: uma tarefa para cada elemento de **x**. O valor inicial para **x** será uma cópia de **B\***.
+**N** tarefas (**bloco 6**) serão utilizadas para definir o valor inicial de **x**: uma tarefa para cada elemento de **x**. O valor inicial para **x** será uma cópia de **B\***.
 
-Cálculo de cada novo valor de **x<sub>new</sub>** será realizado pelo **bloco 5** de tarefas em que **N\*N** tarefas (**bloco 5**) realizarão a multiplicação de cada uma das linhas de **A\*** pelos elementos de **x**. Então **N** tarefas (**bloco 6**) realizarão a subtração de cada elemento de **B** com a soma das multiplicações das respectivas linhas e, após isso, calcularão, cada uma, um elemento de **Dif**, que é dado pelo valor absoluto da subtração entre **x<sub>new</sub>** e **x**. Aproveitando que cada uma das **N** tarefas terão um valor para **x<sub>new</sub>** e para **Dif**, a variável **max<sub>x_new</sub>** armazenará o maior valor absoluto dentre os elementos de **x<sub>new</sub>** e a variável **max<sub>Dif</sub>** armazenará o maior valor dentre os elementos de **Dif**.
+Será realizado pelo **bloco 7** de tarefas em que **N\*N** tarefas realizarão a multiplicação de cada uma das linhas de **A\*** pelos elementos de **x**, cujo resultado será utilizado para o cálculo de **x<sub>new</sub>**. Então **N** tarefas (**bloco 8**) realizarão a subtração de cada elemento de **B** com a soma das multiplicações das respectivas linhas, assim obtendo **x<sub>new</sub>** e, após isso, calcularão, cada uma, um elemento de **Dif**, que é dado pelo valor absoluto da subtração entre **x<sub>new</sub>** e **x**. Aproveitando que cada uma das **N** tarefas terão um valor para **x<sub>new</sub>** e para **Dif**, a variável **max<sub>x_new</sub>** armazenará o maior valor absoluto dentre os elementos de **x<sub>new</sub>** e a variável **max<sub>Dif</sub>** armazenará o maior valor dentre os elementos de **Dif**.
 
-De posse de **max<sub>Dif</sub>** e **max<sub>x_new</sub>**, uma única tarefa (**bloco 7**) realizará a divisão entre aquele e este para obter **mr**. Se **mr** for menor que 0.001, então houve convergência. Caso contrário, o algoritmo voltará a executar as tarefas do **bloco 5** em diante.
+De posse de **max<sub>Dif</sub>** e **max<sub>x_new</sub>**, uma única tarefa (**bloco 9**) realizará a divisão entre aquele e este para obter **mr**. Se **mr** for menor que 0.001, então houve convergência. Caso contrário, o algoritmo voltará a executar as tarefas do **bloco 7** em diante.
 
 
 
 #### Comunicação
 
-A ordem do problema (**N**) será compartilhada entre todas as tarefas, já que será utilizada como somente leitura.
+A imagem abaixo ilustra as variáveis que precisam ser enviadas de um bloco de tarefas a outro.
 
-Tanto **A** quanto **B** também serão compartilhadas entre
+![](.README_images/communication.png)
+
+A tabela abaixo indica como cada bloco utiliza cada variável do problema
+
+|Variável           |início |bloco 1|bloco 2|bloco 3|bloco 4|bloco 5|bloco 6|bloco 7|bloco 8|bloco 9|
+|----               |----   |----   |----   |----   |----   |----   |----   |----   |----   |----   |
+|N                  |   w   |   r   |   r   |   r   |   r   |   r   |   r   |   r   |   r   |   -   |
+|A                  |   -   |   w   |   -   |  r/w  |   r   |   r   |   -   |   -   |   -   |   -   |
+|A*                 |   -   |   -   |   -   |   -   |   w   |   -   |   -   |   r   |   -   |   -   |
+|B                  |   -   |   -   |   w   |   -   |   -   |   r   |   -   |   -   |   -   |   -   |
+|B*                 |   -   |   -   |   -   |   -   |   -   |   w   |   r   |   -   |   -   |   -   |
+|x                  |   -   |   -   |   -   |   -   |   -   |   -   |   w   |   r   |   r   |   -   |
+|x<sub>new</sub>    |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   w   |   w   |   -   |
+|Dif                |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   w   |   -   |
+|max<sub>x_new</sub>|   -   |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   w   |   r   |
+|max<sub>Dif</sub>  |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   w   |   r   |
+|Mr                 |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   -   |   w   |
+
+*No bloco 8 (ou no bloco 9) deve ocorrer o swap entre o
+
+
+###### Início
+
+A variável N é global, já que todos os outros blocos apenas realizam leitura.
+
+###### Bloco 1: Gera Matriz A
+
+Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+
+###### Bloco 2: Gera Vetor Coluna B
+
+Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+
+###### Bloco 3: Altera Matriz A
+
+Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+
+###### Bloco 4: Cria Matriz A*
+
+Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+
+###### Bloco 5: Cria Vetor Coluna B*
+
+Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+
+###### Bloco 6: Cria x (chute inicial)
+
+Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+
+###### Bloco 7: Começa cálculo de x<sub>new</sub>
+
+Cada tarefa realiza a multiplicação de um elemento de **A\*** por um elemento de **x**. As multiplicações em uma mesma linha de **A\*** sofrem redução de soma, cujo resultado é armazenado na respectiva linha de **x<sub>new</sub>**.
+
+###### Bloco 8: Cálculo de x<sub>new</sub>, Dif, max<sub>x_new</sub>, max<sub>Dif</sub>
+
+Este bloco conclui o cálculo de cada elemento de **x<sub>new</sub>** e também calcula cada elemento de **Dif** e, durante este cálculo, realiza também a redução de max para encontrar o **max<sub>x_new</sub>** e o **max<sub>Dif</sub>**. 
+
+###### Bloco 9: Cálculo de Mr
+
+É uma única tarefa. O resultado deste cálculo é utilizado de sinalização para o algoritmo prosseguir ou parar. Essa sinalização é enviada para o **bloco 7**.
+
+
+
+#### Aglomeração
+
+
+
+#### Mapeamento
+
+O mapeamento fica a cargo do Sistema Operacional (via OpenMP)
