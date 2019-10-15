@@ -88,27 +88,29 @@ A variável N é global, já que todos os outros blocos apenas realizam leitura.
 
 ###### Bloco 1: Gera Matriz A
 
-Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+Não há comunicação interna entre as tarefas deste bloco.
 
 ###### Bloco 2: Gera Vetor Coluna B
 
-Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+Não há comunicação interna entre as tarefas deste bloco.
 
 ###### Bloco 3: Altera Matriz A
 
-Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+Não há comunicação interna entre as tarefas deste bloco.
 
 ###### Bloco 4: Cria Matriz A*
 
-Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+Não há comunicação interna entre as tarefas deste bloco.
 
 ###### Bloco 5: Cria Vetor Coluna B*
 
-Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+Não há comunicação interna entre as tarefas deste bloco.
 
 ###### Bloco 6: Cria x (chute inicial)
 
-Não há comunicação interna entre as tarefas deste bloco. Acessa N, que é global.
+Não há comunicação interna entre as tarefas deste bloco.
+
+*Comentário: aqui eu percebi que particionamento por dados (cada tarefa em uma linha) deve ser mais vantajoso, mas vou continuar com particionamento por função para fazer diferente no que fiz nos outros trabalhos.*
 
 ###### Bloco 7: Começa cálculo de x<sub>new</sub>
 
@@ -126,8 +128,11 @@ Este bloco conclui o cálculo de cada elemento de **x<sub>new</sub>** e também 
 
 #### Aglomeração
 
+O bloco 1 e o bloco 3 são realizados de maneira serial entre si, sendo que bloco 1 cria a matriz A e o bloco 3 altera a matriz A para que esta garanta a convergência do método. Ambos os blocos podem ser fusionados para que, ao fim da geração de cada linha de A, a estratégia de garantia de convergência já seja executada.
+Ao mesmo tempo, a cada linha de A com convergência garantida, a respectiva linha de A* pode ser calculada, assim como o respectivo elemento de B* também pode ser calculado, que também pode já definir o valor inicial para x (que é baseado no valor de B*). Ou seja, Os blocos 1, 2, 3, 4, 5 e 6 tornam-se um bloco só.
 
+O que não foi comentado, pernamece como está.
 
 #### Mapeamento
 
-O mapeamento fica a cargo do Sistema Operacional (via OpenMP)
+O mapeamento fica a cargo do Sistema Operacional.

@@ -129,6 +129,106 @@ class "bloco 6"
 }
 class "bloco 7"
 {
+    inicia x_new (a parte do A* * x)
+    --
+    **N*N** tarefas
+}
+class "bloco 8"
+{
+    finaliza x_new (a parte do B*)
+    cria Dif
+    cria max_x_new
+    cria max_Dif
+    --
+    **N** tarefas
+}
+
+class "bloco 9"
+{
+    cria mr
+    --
+    **1** tarefa
+}
+
+início    --> "bloco 1"    : N
+início    --> "bloco 2"    : N
+início    --> "bloco 3"    : N
+início    --> "bloco 4"    : N
+início    --> "bloco 5"    : N
+início    --> "bloco 6"    : N
+início    --> "bloco 7"    : N
+início    --> "bloco 8"    : N
+
+"bloco 1" --> "bloco 3" : A
+
+"bloco 2" --> "bloco 5" : B
+
+"bloco 3" --> "bloco 4" : A
+"bloco 3" --> "bloco 5" : A
+
+"bloco 4" --> "bloco 7" : A*
+
+"bloco 5" --> "bloco 6" : B*
+"bloco 5" --> "bloco 8" : B*
+
+"bloco 6" --> "bloco 7" : x
+"bloco 6" --> "bloco 8" : x
+
+"bloco 7" --> "bloco 8" : quase x_new
+
+"bloco 8" --> "bloco 7" : x_new como x
+"bloco 8" --> "bloco 9" : max_Dif, max_x_new
+
+"bloco 9" ----> "bloco 7" : continua?
+
+@enduml
+
+
+
+@startuml
+!define LIGHTBLUE
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+hide circles
+hide methods
+
+title **Comunicação**
+
+class início
+{
+    Lê N
+    --
+    **1** tarefa
+}
+
+class "bloco 1"
+{
+    cria A
+    altera A
+    cria A*
+    --
+    **N** tarefas
+}
+
+class "bloco 2"
+{
+    cria B
+    --
+    **N** tarefas
+}
+class "bloco 5"
+{
+    cria B*
+    --
+    **N** tarefas
+}
+class "bloco 6"
+{
+    cria x (inicial)
+    --
+    **N** tarefas
+}
+class "bloco 7"
+{
     calcula A* * x
     --
     **N*N** tarefas
@@ -174,7 +274,7 @@ início    --> "bloco 8"    : N
 "bloco 6" --> "bloco 7" : x
 "bloco 6" --> "bloco 8" : x
 
-"bloco 7" --> "bloco 8" : A* * x
+"bloco 7" --> "bloco 8" : quase x_new
 
 "bloco 8" --> "bloco 7" : x_new
 "bloco 8" --> "bloco 9" : max_Dif, max_x_new
