@@ -12,12 +12,9 @@
 
 #define MAX(A, B) ((A) > (B) ? (A) : (B))
 
-#undef VERBOSE
-
-#undef EXAMPLE_TEST
-
-#define STRING2(x) #x
-#define STRING(x) STRING2(x)
+#undef EXAMPLE_TEST //to run only the test
+#undef VERBOSE //to print a lot of stuff (A LOT)
+#define USER_TEST // to allow user to test one of the problem equations
 
 void printColumnVector(double* vec, int N, char* name){
 
@@ -258,6 +255,8 @@ int main(int argc, char* argv[])
     printf("Time\t%10.5lf\t", time);
     printf("B max error: %10.5lf\n", B_max_error);
 
+#ifdef USER_TEST
+
     char input[256];
     int index;
     double result = 0;
@@ -304,7 +303,7 @@ int main(int argc, char* argv[])
             printf("\n\nPor favor, insira um numero inteiro de 0 a %d\n\n", N-1);
         }
     } while (askagain == 1);
-
+#endif
     free(Dif);
     free(B_new);
     free(line_sum);
