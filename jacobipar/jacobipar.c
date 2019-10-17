@@ -218,8 +218,8 @@ int main(int argc, char* argv[])
                 }
                 Dif[lin] = fabs(x_new[lin] - x[lin]);
 
-                max_Dif = Dif[lin];
-                max_x_new = fabs(x_new[lin]);
+                max_Dif = MAX(max_Dif, Dif[lin]);
+                max_x_new = MAX(max_x_new, fabs(x_new[lin]));
             }
         
         mr = max_Dif / max_x_new;
@@ -245,7 +245,7 @@ int main(int argc, char* argv[])
             B_new[lin] += A[lin * N + col] * x[col];
         }
 
-        B_max_error = fabs(B_new[lin] - B[lin]);
+        B_max_error = MAX(B_max_error, fabs(B_new[lin] - B[lin]));
 
 #ifdef VERBOSE
         printf("%10.5lf | %10.5lf\n", B[lin], B_new[lin]);
@@ -257,6 +257,56 @@ int main(int argc, char* argv[])
     printf("T\t%d\t", T);
     printf("Time\t%10.5lf\t", time*1e5);
     printf("B max error\t%10.5lf\t\n", B_max_error);
+
+
+    char input[256];
+    int index;
+    double result = 0;
+    unsigned char askagain = 1;
+
+    do
+    {
+        printf("\n\nEscolha uma equacao para avaliar a exatidao do resultado calculado\nInsira um numero inteiro de 0 a %d:\n",
+               N - 1);
+        if (fgets(input, sizeof(input), stdin))
+        {
+            if (1 == sscanf(input, "%d", &index))
+            {
+                if(0 <= index && index < N)
+                {
+                    askagain = 0;
+                    col=0;
+#pragma omp parallel for default(none) shared(N, A, index, x) reduction(+: result) schedule(static)
+                    for (int col = 0; col < N; col++)
+                    {
+                        result += A[index * N + col] * x[col];
+                    }
+
+                    printf("\nResultado:"
+                           "\n\tB[%d] original: %10.5lf"
+                           "\n\tRespectivo B calculado com x = %10.5lf"
+                           "\n\tDiferenca entre ambos: %10.5lf\n", index, B[index], result, fabs(B[index] - result));
+                }
+                else
+                {
+                    askagain = 1;
+                }
+            }
+            else
+            {
+                askagain = 1;
+            }
+        }
+        else
+        {
+            askagain = 1;
+        }
+
+        if(askagain == 1)
+        {
+            printf("\n\nPor favor, insira um numero inteiro de 0 a %d\n\n", N-1);
+        }
+    } while (askagain == 1);
 
     free(Dif);
     free(B_new);

@@ -258,6 +258,53 @@ int main(int argc, char* argv[])
     printf("Time\t%10.5lf\t", time);
     printf("B max error: %10.5lf\n", B_max_error);
 
+    char input[256];
+    int index;
+    double result = 0;
+    unsigned char askagain = 1;
+
+    do
+    {
+        printf("\n\nEscolha uma equacao para avaliar a exatidao do resultado calculado\nInsira um numero inteiro de 0 a %d:\n",
+               N - 1);
+        if (fgets(input, sizeof(input), stdin))
+        {
+            if (1 == sscanf(input, "%d", &index))
+            {
+                if(0 <= index && index < N)
+                {
+                    askagain = 0;
+                    for (col = 0; col < N; col++)
+                    {
+                        result += A[index * N + col] * x[col];
+                    }
+
+                    printf("\nResultado:"
+                           "\n\tB[%d] original: %10.5lf"
+                           "\n\tRespectivo B calculado com x = %10.5lf"
+                           "\n\tDiferenca entre ambos: %10.5lf\n", index, B[index], result, fabs(B[index] - result));
+                }
+                else
+                {
+                    askagain = 1;
+                }
+            }
+            else
+            {
+                askagain = 1;
+            }
+        }
+        else
+        {
+            askagain = 1;
+        }
+
+        if(askagain == 1)
+        {
+            printf("\n\nPor favor, insira um numero inteiro de 0 a %d\n\n", N-1);
+        }
+    } while (askagain == 1);
+
     free(Dif);
     free(B_new);
     free(line_sum);
