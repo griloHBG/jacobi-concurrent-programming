@@ -12,4 +12,5 @@ IF(USE_OpenMP)
     ENDIF()
 ENDIF()
 
-add_executable(jacobipar jacobipar.c random_par.c)
+add_executable(jacobipar jacobipar.c)
+target_link_libraries(jacobipar m)

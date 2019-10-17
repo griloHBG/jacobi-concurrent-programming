@@ -7,16 +7,21 @@
 #include <string.h>
 #include <math.h>
 #include <float.h>
+#include <omp.h>
+#include <time.h>
 
-#define MAX(A, B) A > B ? A : B
-#define MIN(A, B) A < B ? A : B
+#define MAX(A, B) ((A) > (B) ? (A) : (B))
 
-#define EXAMPLE_TEST
+#undef VERBOSE
 
+#undef EXAMPLE_TEST
+
+#define STRING2(x) #x
+#define STRING(x) STRING2(x)
 
 void printColumnVector(double* vec, int N, char* name){
 
-    int lin, col;
+    int lin;
 
     printf("%s:", name);
 
@@ -45,34 +50,37 @@ void printMatrix(double* matrix, int N, char* name){
 
 int main(int argc, char* argv[])
 {
+
+    srand((int)time(NULL));
+
     //help message for when program is missused
     char help_message[300];
     sprintf(help_message,
             "Usage:\n"
-            "\t%s <N> <T>\n\n"
+            "\t%s <N>\n\n"
             "Where:\n"
-            "\tN is the amount of equations pseudorandomly generated\n"
-            "\tT is the amount of POSIX threads that will be used\n",
+            "\tN is the amount of equations pseudorandomly generated\n",
             argv[0]);
 
     //if there is something different than 2 command-line arguments, is missuse
-    if( argc != 3)
+    if( argc != 2)
     {
         printf("%s", help_message);
         exit(0);
     }
 
+    double time = omp_get_wtime();
+
     //printing how much threads will be used to solve how much equations
+#ifdef VERBOSE
     printf("%9s = %s\n%9s = %s\n","equations", argv[1], "threads", argv[2]);
+#endif
 
     //N is the amount of equations
     int N = MAX(2, (int) strtol(argv[1], NULL, 0));
 #ifdef EXAMPLE_TEST
     N = 3;
 #endif
-
-    //T is the amount of threads
-    int T = 1;//MAX(1, (int) strtol(argv[2], NULL, 0));
 
     //matrix A [N x N] of the linear system
     double* A = (double*) calloc(N * N, sizeof(double));
@@ -124,7 +132,7 @@ int main(int argc, char* argv[])
             A[lin * N + col] = test_A[lin * N + col];
 #endif
 
-            line_sum[lin] += ((lin == col) ? 0 : A[lin * N + col]);
+            line_sum[lin] += ((int)(lin != col)) * A[lin * N + col];
         }
         //Convergence is assured if, in a line, the sum of non-diagonal element is less than the diagonal element
         //So, to assure convergence, a random number is sumed to the diagonal element until it is greater than the line non-diagonal elements sum
@@ -137,7 +145,7 @@ int main(int argc, char* argv[])
         B[lin] = test_B[lin];
 #endif
     }
-
+#ifdef VERBOSE
     //printing A
     printf("\n");
     printMatrix(A, N, "A");
@@ -150,20 +158,22 @@ int main(int argc, char* argv[])
 
     //Analysing convergence
     printf("\nConverges? Lets see...\n");
+#endif
 
     for(lin = 0; lin < N; lin++)
     {
-        line_sum[lin] = 0;
+        //line_sum[lin] = 0;
         for(col = 0; col < N; col++)
         {
-            A_star[lin * N + col] = ((lin == col) ? 0 : A[lin * N + col] / A[lin * (N + 1)]);
-            line_sum[lin] += A_star[lin * N + col];
+            A_star[lin * N + col] = ((int)(lin != col))* A[lin * N + col] / A[lin * (N + 1)];
+            //line_sum[lin] += A_star[lin * N + col];
         }
 
         B_star[lin] = B[lin] / A[lin * (N + 1)];
         x[lin] = B_star[lin];
     }
 
+#ifdef VERBOSE
     //printing A_star
     printf("\n");
     printMatrix(A_star, N, "A*");
@@ -183,7 +193,7 @@ int main(int argc, char* argv[])
     printf("\n");
     printColumnVector(x, N, "x");
     printf("\n");
-
+#endif
     double max_Dif;
     double max_x_new;
 
@@ -224,9 +234,15 @@ int main(int argc, char* argv[])
 
     }while (mr >= 1e-4);
 
+    time = omp_get_wtime() - time;
+
+#ifdef VERBOSE
     printf("\n");
     printColumnVector(x_new, N, "x_new");
     printf("\n");
+#endif
+
+    double B_max_error = -DBL_MAX;
 
     for (lin = 0; lin < N; ++lin) {
         B_new[lin] = 0;
@@ -234,9 +250,13 @@ int main(int argc, char* argv[])
         for (col = 0; col < N; ++col) {
             B_new[lin] += A[lin * N + col] * x[col];
         }
+
+        B_max_error = MAX(B_max_error, fabs(B_new[lin] - B[lin]));
     }
 
-    printColumnVector(B_new, N, "B_new");
+    printf("N\t%d\t", N); 
+    printf("Time\t%10.5lf\t", time);
+    printf("B max error: %10.5lf\n", B_max_error);
 
     free(Dif);
     free(B_new);
