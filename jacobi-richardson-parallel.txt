@@ -1,0 +1,15 @@
+O trabalho está disponível no link abaixo:
+
+https://github.com/griloHBG/jacobi-concurrent-programming
+
+
+Como compilar no linux:
+
+gcc jacobiseq.c -o jacobiseq -lm
+gcc jacobipar.c -o jacobipar -fopenmp -lm
+
+
+Como compilar no Windows (utilizando msys2):
+
+gcc jacobiseq.c -o jacobiseq.exe -lm
+gcc jacobipar.c -o jacobipar.exe -fopenmp -lm
